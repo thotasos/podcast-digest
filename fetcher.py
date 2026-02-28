@@ -56,15 +56,24 @@ def _resolve_apple_podcasts_url(url: str) -> str:
         )
         lookup.raise_for_status()
         results = lookup.json().get("results", [])
-        if results and "feedUrl" in results[0]:
-            feed_url = results[0]["feedUrl"]
-            console.print(f"[dim]Resolved to: {feed_url}[/dim]")
-            return feed_url
-    except (requests.RequestException, ValueError, KeyError):
+        if results:
+            podcast_name = results[0].get("trackName", "This podcast")
+            if "feedUrl" in results[0]:
+                feed_url = results[0]["feedUrl"]
+                console.print(f"[dim]Resolved to: {feed_url}[/dim]")
+                return feed_url
+            else:
+                console.print(
+                    f"[bold red]{podcast_name} does not have a public RSS feed.[/bold red]\n"
+                    "[dim]This is an Apple-exclusive podcast and cannot be accessed via RSS.\n"
+                    "Try a different podcast or use --youtube instead.[/dim]"
+                )
+                raise SystemExit(1)
+    except requests.RequestException:
         pass
 
-    console.print("[yellow]Could not resolve Apple Podcasts URL to RSS feed.[/yellow]")
-    return url
+    console.print("[bold red]Could not resolve Apple Podcasts URL to RSS feed.[/bold red]")
+    raise SystemExit(1)
 
 
 def fetch_rss(url: str, episode_index: int, temp_dir: str) -> tuple[str, str]:
