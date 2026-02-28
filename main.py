@@ -161,9 +161,9 @@ def main() -> None:
     console.print()
 
     # ── Step 5: Format and save ───────────────────────────────────────
-    from formatter import build_markdown, save_markdown
+    from formatter import build_pdf
 
-    md_content = build_markdown(
+    output_path = build_pdf(
         title=title,
         duration_seconds=duration,
         whisper_model=config["whisper_model"],
@@ -171,9 +171,8 @@ def main() -> None:
         summary=summary,
         chapters=chapters,
         segments=segments,
+        output_dir=config["output_dir"],
     )
-
-    output_path = save_markdown(md_content, title, config["output_dir"])
 
     # ── Step 6: Summary ───────────────────────────────────────────────
     def _fmt_elapsed(secs: float) -> str:
