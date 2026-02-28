@@ -1,0 +1,7 @@
+faster-whisper
+ollama
+feedparser
+yt-dlp
+pyyaml
+rich
+requests

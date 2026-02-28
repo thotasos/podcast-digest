@@ -1,0 +1,20 @@
+# Whisper
+whisper_model: "small"          # tiny, base, small, medium, large-v3
+whisper_device: "cpu"           # cpu or cuda
+whisper_language: "en"          # null for auto-detect
+
+# Ollama
+model: "gpt-oss:20b"
+ollama_host: "http://localhost:11434"
+
+# Chunking
+chunk_minutes: 5                # How many minutes per summarization chunk
+max_takeaways_per_chunk: 3      # LLM extracts up to this many per chunk
+top_takeaways_final: 8          # Final best-of count
+
+# Output
+output_dir: "~/Documents/PodcastDigests"
+open_after: false               # Open file in default app when done
+
+# Temp directory for downloaded audio
+temp_dir: "/tmp/podcast_digest"
