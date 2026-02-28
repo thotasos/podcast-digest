@@ -87,14 +87,16 @@ Edit `config.yaml` to customize behavior:
 | Podcast | RSS Feed |
 |---------|----------|
 | Huberman Lab | `https://feeds.megaphone.fm/hubermanlab` |
-| Apple News Today | `https://podcasts.apple.com/us/podcast/apple-news-today/id1473872585` |
-| NPR KQED Forum | `https://feeds.npr.org/510053/podcast.xml` |
+| KQED Forum | `https://feeds.megaphone.fm/KQINC9557381633` |
 | Techmeme Ride Home | `https://feeds.megaphone.fm/ridehome` |
+
+You can also pass Apple Podcasts URLs directly — they'll be resolved to RSS automatically:
 
 ```bash
 python3 main.py --rss https://feeds.megaphone.fm/hubermanlab
-python3 main.py --rss https://feeds.npr.org/510053/podcast.xml
+python3 main.py --rss https://feeds.megaphone.fm/KQINC9557381633
 python3 main.py --rss https://feeds.megaphone.fm/ridehome
+python3 main.py --rss https://podcasts.apple.com/us/podcast/kqeds-forum/id73329719
 ```
 
 ## Example Output

@@ -37,11 +37,44 @@ def fetch_file(path: str) -> tuple[str, str]:
     return expanded, title
 
 
+def _resolve_apple_podcasts_url(url: str) -> str:
+    """If url is an Apple Podcasts link, resolve it to the underlying RSS feed URL."""
+    if "podcasts.apple.com" not in url:
+        return url
+
+    # Extract podcast ID from URL (e.g. /id1473872585)
+    match = re.search(r"/id(\d+)", url)
+    if not match:
+        return url
+
+    podcast_id = match.group(1)
+    console.print(f"[dim]Resolving Apple Podcasts ID {podcast_id} to RSS feed...[/dim]")
+    try:
+        lookup = requests.get(
+            f"https://itunes.apple.com/lookup?id={podcast_id}&entity=podcast",
+            timeout=15,
+        )
+        lookup.raise_for_status()
+        results = lookup.json().get("results", [])
+        if results and "feedUrl" in results[0]:
+            feed_url = results[0]["feedUrl"]
+            console.print(f"[dim]Resolved to: {feed_url}[/dim]")
+            return feed_url
+    except (requests.RequestException, ValueError, KeyError):
+        pass
+
+    console.print("[yellow]Could not resolve Apple Podcasts URL to RSS feed.[/yellow]")
+    return url
+
+
 def fetch_rss(url: str, episode_index: int, temp_dir: str) -> tuple[str, str]:
     """Download episode audio from RSS feed. Returns (audio_path, episode_title).
 
     episode_index is 1-based (1 = latest).
+    Accepts direct RSS URLs or Apple Podcasts URLs.
     """
+    url = _resolve_apple_podcasts_url(url)
+
     console.print(f"[bold]Source:[/bold] RSS feed")
     console.print(f"[dim]Parsing feed: {url}[/dim]")
 
