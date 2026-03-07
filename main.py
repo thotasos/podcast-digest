@@ -185,8 +185,7 @@ def main() -> None:
         f"[bold green]Done![/bold green]\n"
         f"[bold]Output:[/bold] {output_path}\n"
         f"[bold]Transcription:[/bold] {_fmt_elapsed(t_transcribe)}\n"
-        f"[bold]Summarization:[/bold] {_fmt_elapsed(t_summarize)}\n"
-        f"[bold]Chapters:[/bold] {len(chapters)}",
+        f"[bold]Summarization:[/bold] {_fmt_elapsed(t_summarize)}",
         border_style="green",
     ))
 

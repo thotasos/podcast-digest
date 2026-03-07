@@ -3,19 +3,17 @@
 from __future__ import annotations
 
 import os
-import textwrap
 from datetime import datetime
 
 from fpdf import FPDF
 
-from transcriber import Segment, format_timestamp
+from transcriber import format_timestamp
 
 # ── Color palette ─────────────────────────────────────────────────────────────
 _DARK = (30, 30, 30)
 _GRAY = (100, 100, 100)
 _LIGHT_GRAY = (180, 180, 180)
 _ACCENT = (66, 99, 235)
-_BG_LIGHT = (245, 245, 250)
 
 
 def _sanitize_text(text: str) -> str:
@@ -88,64 +86,6 @@ def build_pdf(
         pdf.cell(pw, 6, "No summary generated.")
     pdf.ln(6)
 
-    _draw_divider(pdf, pw)
-
-    # ── Chapters ──────────────────────────────────────────────────────
-    _section_heading(pdf, pw, "Chapters")
-    if chapters:
-        for ch in chapters:
-            ts_part, title_part = _split_chapter(_sanitize_text(ch))
-            pdf.set_font("Courier", "B", 10)
-            pdf.set_text_color(*_ACCENT)
-            ts_w = pdf.get_string_width(ts_part + "  ") + 2
-            pdf.cell(ts_w, 6, ts_part)
-            pdf.set_font("Helvetica", "", 10)
-            pdf.set_text_color(*_DARK)
-            pdf.cell(pw - ts_w, 6, title_part)
-            pdf.ln(6)
-    else:
-        pdf.set_font("Helvetica", "I", 11)
-        pdf.set_text_color(*_GRAY)
-        pdf.cell(pw, 6, "No chapters detected.")
-    pdf.ln(6)
-
-    _draw_divider(pdf, pw)
-
-    # ── Full Transcript ───────────────────────────────────────────────
-    _section_heading(pdf, pw, "Full Transcript")
-    pdf.set_font("Helvetica", "", 8)
-    ts_col_w = 22
-    text_col_w = pw - ts_col_w
-
-    for seg in segments:
-        ts = f"[{format_timestamp(seg.start)}]"
-        text = _sanitize_text(seg.text.strip())
-        if not text:
-            continue
-
-        # Wrap long lines
-        wrapped = textwrap.wrap(text, width=100)
-        line_h = 4.5
-        block_h = len(wrapped) * line_h
-
-        # Page break check
-        if pdf.get_y() + block_h > pdf.h - 20:
-            pdf.add_page()
-
-        y_start = pdf.get_y()
-        pdf.set_font("Courier", "", 7)
-        pdf.set_text_color(*_ACCENT)
-        pdf.set_xy(pdf.l_margin, y_start)
-        pdf.cell(ts_col_w, line_h, ts)
-
-        pdf.set_font("Helvetica", "", 8)
-        pdf.set_text_color(*_DARK)
-        for j, wline in enumerate(wrapped):
-            pdf.set_xy(pdf.l_margin + ts_col_w, y_start + j * line_h)
-            pdf.cell(text_col_w, line_h, wline)
-
-        pdf.set_y(y_start + block_h + 1)
-
     # ── Save ──────────────────────────────────────────────────────────
     expanded_dir = os.path.expanduser(output_dir)
     os.makedirs(expanded_dir, exist_ok=True)
@@ -175,10 +115,3 @@ def _draw_divider(pdf: FPDF, pw: float) -> None:
     pdf.ln(6)
 
 
-def _split_chapter(ch: str) -> tuple[str, str]:
-    """Split a chapter string into (timestamp, title)."""
-    for sep in ["–", "-"]:
-        if sep in ch:
-            ts, title = ch.split(sep, 1)
-            return ts.strip(), title.strip()
-    return "", ch
