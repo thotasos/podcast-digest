@@ -12,8 +12,9 @@ from transcriber import format_timestamp
 # ── Color palette ─────────────────────────────────────────────────────────────
 _DARK = (30, 30, 30)
 _GRAY = (100, 100, 100)
-_LIGHT_GRAY = (180, 180, 180)
+_LIGHT_GRAY = (200, 200, 200)
 _ACCENT = (66, 99, 235)
+_ACCENT_LIGHT = (230, 235, 255)
 
 
 def _sanitize_text(text: str) -> str:
@@ -43,6 +44,7 @@ def build_pdf(
     ollama_model: str,
     summary: str,
     chapters: list[str],
+    takeaways: list[str],
     segments: list[Segment],
     output_dir: str,
 ) -> str:
@@ -57,22 +59,17 @@ def build_pdf(
     pw = pdf.w - pdf.l_margin - pdf.r_margin  # printable width
 
     # ── Title ─────────────────────────────────────────────────────────
-    pdf.set_font("Helvetica", "B", 20)
-    pdf.set_text_color(*_DARK)
-    pdf.multi_cell(pw, 10, _sanitize_text(title))
-    pdf.ln(2)
+    pdf.set_font("Helvetica", "B", 22)
+    pdf.set_text_color(*_ACCENT)
+    pdf.multi_cell(pw, 12, _sanitize_text(title))
+    pdf.ln(4)
 
     # Subtitle / metadata
-    pdf.set_font("Helvetica", "", 9)
+    pdf.set_font("Helvetica", "", 10)
     pdf.set_text_color(*_GRAY)
-    meta = (
-        f"{duration_str}  |  Whisper ({whisper_model})  |  {ollama_model}  |  {date_str}"
-    )
+    meta = f"{duration_str}  ·  Whisper ({whisper_model})  ·  {ollama_model}  ·  {date_str}"
     pdf.cell(pw, 5, meta)
-    pdf.ln(8)
-
-    # Divider
-    _draw_divider(pdf, pw)
+    pdf.ln(12)
 
     # ── Summary ───────────────────────────────────────────────────────
     _section_heading(pdf, pw, "Summary")
@@ -84,7 +81,60 @@ def build_pdf(
         pdf.set_font("Helvetica", "I", 11)
         pdf.set_text_color(*_GRAY)
         pdf.cell(pw, 6, "No summary generated.")
-    pdf.ln(6)
+    pdf.ln(10)
+
+    # ── Chapters ───────────────────────────────────────────────────────
+    if chapters:
+        _section_heading(pdf, pw, "Chapters")
+        pdf.set_font("Helvetica", "", 10)
+        pdf.set_text_color(*_DARK)
+        for ch in chapters:
+            # Parse timestamp and title
+            if "–" in ch:
+                ts, ch_title = ch.split("–", 1)
+                pdf.set_font("Helvetica", "B", 10)
+                pdf.set_text_color(*_ACCENT)
+                pdf.cell(25, 6, _sanitize_text(ts.strip()), 0, 0)
+                pdf.set_font("Helvetica", "", 10)
+                pdf.set_text_color(*_DARK)
+                pdf.multi_cell(pw - 25, 6, _sanitize_text(ch_title.strip()))
+            else:
+                pdf.multi_cell(pw, 5, _sanitize_text(ch))
+            pdf.ln(2)
+        pdf.ln(6)
+
+    # ── Key Takeaways ─────────────────────────────────────────────────
+    if takeaways:
+        _section_heading(pdf, pw, "Key Takeaways")
+        # Limit to top 10 takeaways to avoid overwhelming
+        display_takeaways = takeaways[:10]
+        for i, tw in enumerate(display_takeaways):
+            # Extract timestamp if present
+            if tw.startswith("["):
+                ts_end = tw.find("]")
+                if ts_end > 0:
+                    ts = tw[1:ts_end]
+                    text = tw[ts_end + 1:].strip()
+                    pdf.set_font("Helvetica", "B", 9)
+                    pdf.set_text_color(*_ACCENT)
+                    pdf.cell(22, 5, ts, 0, 0)
+                    pdf.set_font("Helvetica", "", 9)
+                    pdf.set_text_color(*_DARK)
+                    pdf.multi_cell(pw - 22, 5, _sanitize_text(text))
+                else:
+                    pdf.set_font("Helvetica", "", 9)
+                    pdf.set_text_color(*_DARK)
+                    pdf.multi_cell(pw, 5, _sanitize_text(tw))
+            else:
+                pdf.set_font("Helvetica", "", 9)
+                pdf.set_text_color(*_DARK)
+                pdf.multi_cell(pw, 5, _sanitize_text(tw))
+            pdf.ln(2)
+        if len(takeaways) > 10:
+            pdf.ln(2)
+            pdf.set_font("Helvetica", "I", 9)
+            pdf.set_text_color(*_GRAY)
+            pdf.cell(pw, 5, f"... and {len(takeaways) - 10} more takeaways")
 
     # ── Save ──────────────────────────────────────────────────────────
     expanded_dir = os.path.expanduser(output_dir)

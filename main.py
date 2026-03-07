@@ -144,7 +144,7 @@ def main() -> None:
         status_holder["status"].update(f"[bold blue]Summarizing chunk {current + 1}/{total}...")
 
     t_sum_start = time.time()
-    summary, chapters = run_summarization(
+    summary, chapters, takeaways = run_summarization(
         chunks=chunk_dicts,
         transcript_text=transcript_text,
         model=config["model"],
@@ -170,6 +170,7 @@ def main() -> None:
         ollama_model=config["model"],
         summary=summary,
         chapters=chapters,
+        takeaways=takeaways,
         segments=segments,
         output_dir=config["output_dir"],
     )

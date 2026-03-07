@@ -66,7 +66,7 @@ Edit `config.yaml` to customize behavior:
 | `chunk_minutes` | `5` | Minutes per summarization chunk |
 | `max_takeaways_per_chunk` | `3` | Max takeaways extracted per chunk |
 | `top_takeaways_final` | `8` | Final best-of count |
-| `output_dir` | `~/Documents/PodcastDigests` | Where Markdown files are saved |
+| `output_dir` | `~/Documents/PodcastDigests` | Where PDF files are saved |
 | `open_after` | `false` | Auto-open output file |
 | `temp_dir` | `/tmp/podcast_digest` | Temp directory for downloads |
 
@@ -101,38 +101,25 @@ python3 main.py --rss https://podcasts.apple.com/us/podcast/kqeds-forum/id733297
 
 ## Example Output
 
-```markdown
-# Huberman Lab — Essentials: Using Light to Optimize Health
-_00:42:15 · Transcribed with Whisper (small) · Summarized with gpt-oss:20b_
-_Generated 2026-02-28_
+The tool generates a beautifully designed PDF with the following sections:
 
----
+### Summary
+A coherent paragraph capturing the episode's key insights, core message, and who would benefit most from listening.
 
-## Summary
-
-Light is a powerful biological tool that goes far beyond vision — different
-wavelengths penetrate tissues at varying depths and can directly alter gene
-expression in every cell of the body. Morning sunlight exposure triggers
-melanopsin receptors in the eye to shut down melatonin production and set the
-circadian clock, while UVB exposure on the skin boosts testosterone and estrogen
-levels and triggers endogenous opioid release that reduces pain. Red and
-near-infrared light therapy can penetrate the dermis to activate mitochondria,
-boost ATP production, and even reverse aging of retinal neurons, improving visual
-acuity by up to 22%. Getting 20-30 minutes of direct sunlight two to three times
-a week provides measurable hormonal and pain-reduction benefits without requiring
-any supplements or devices.
-
----
-
-## Chapters
-
+### Chapters
+Timestamped topic transitions throughout the episode for easy navigation:
 - `00:00:00` – Intro & Podcast Overview
 - `00:01:27` – Light Spectrum & Tissue Penetration
-- `00:02:07` – Photoreceptor Basics
-- `00:15:30` – UVB & Hormonal Effects
-- `00:30:05` – Red Light Therapy
-- `00:38:00` – Practical Recommendations
-```
+- ...
+
+### Key Takeaways
+Individual actionable insights with timestamps, highlighting:
+- Specific recommendations and advice
+- Surprising or counterintuitive facts
+- Studies, tools, and resources mentioned
+- Claims vs. opinions
+
+The PDF uses a clean, modern design with accent colors for visual hierarchy and easy scanning.
 
 ## Supported Audio Formats
 

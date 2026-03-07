@@ -51,6 +51,11 @@ def summarize_chunk(
         f"Segment starts at {start_ts}.\n\n"
         f"Extract up to {max_takeaways} key takeaways from this segment.\n"
         "Each takeaway must be a single, specific, actionable or insightful sentence.\n"
+        "Prioritize:\n"
+        "- Actionable advice or recommendations\n"
+        "- Surprising or counterintuitive insights\n"
+        "- Specific facts, studies, tools, or resources mentioned\n"
+        "- Claims that distinguish fact from opinion\n"
         "Format each as: [HH:MM:SS] The insight here.\n"
         "Use timestamps within this segment that best represent when the insight was mentioned.\n"
         "Only output the takeaways, nothing else.\n\n"
@@ -84,6 +89,10 @@ def final_summary(all_takeaways: list[str], top_n: int, model: str, host: str) -
         "Weave the key points together naturally — do not use bullet points or numbered lists.\n"
         "Do NOT include timestamps in the summary.\n"
         "Write in a clear, informative tone as if briefing someone who hasn't listened.\n"
+        "Include:\n"
+        "- A brief 'bottom line' or core message of the episode\n"
+        "- Who would benefit most from this episode (e.g., 'especially useful for entrepreneurs...')\n"
+        "- Key surprising insights that make this worth listening to\n"
         "Only output the summary paragraph, nothing else.\n\n"
         f"Takeaways:\n{combined}"
     )
@@ -104,7 +113,8 @@ def detect_chapters(transcript_text: str, model: str, host: str) -> list[str]:
     # Use first 8000 chars for chapter detection
     sample = transcript_text[:8000]
     prompt = (
-        "Based on this podcast transcript, identify 4-8 chapter/topic transitions.\n"
+        "Based on this podcast transcript, identify 4-8 key chapter/topic transitions.\n"
+        "Focus on major topic shifts, not minor sub-sections.\n"
         "Format each as: HH:MM:SS – Chapter title (short, 3-6 words)\n"
         "Return only the chapter list, nothing else.\n\n"
         f"Transcript (partial):\n{sample}"
@@ -140,8 +150,8 @@ def run_summarization(
     max_takeaways_per_chunk: int,
     top_takeaways_final: int,
     progress_callback: callable | None = None,
-) -> tuple[str, list[str]]:
-    """Full summarization pipeline. Returns (summary_paragraph, chapters).
+) -> tuple[str, list[str], list[str]]:
+    """Full summarization pipeline. Returns (summary_paragraph, chapters, takeaways).
 
     chunks: list of dicts with keys start_ts, end_ts, text
     progress_callback: called with (current_chunk_index, total_chunks) for progress display
@@ -170,7 +180,7 @@ def run_summarization(
 
     if not all_takeaways:
         console.print("[bold red]No takeaways extracted from any chunk.[/bold red]")
-        return "", []
+        return "", [], []
 
     # Final summary pass
     summary_text = final_summary(all_takeaways, top_takeaways_final, model, host)
@@ -182,4 +192,4 @@ def run_summarization(
         console.print(f"[yellow]Warning: Chapter detection failed: {exc}[/yellow]")
         chapters = []
 
-    return summary_text, chapters
+    return summary_text, chapters, all_takeaways
