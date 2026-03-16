@@ -7,7 +7,7 @@ from datetime import datetime
 
 from fpdf import FPDF
 
-from transcriber import format_timestamp
+from transcriber import format_timestamp, Segment
 
 # ── Color palette ─────────────────────────────────────────────────────────────
 _DARK = (30, 30, 30)
@@ -156,12 +156,5 @@ def _section_heading(pdf: FPDF, pw: float, text: str) -> None:
     pdf.set_text_color(*_ACCENT)
     pdf.cell(pw, 8, text)
     pdf.ln(10)
-
-
-def _draw_divider(pdf: FPDF, pw: float) -> None:
-    y = pdf.get_y()
-    pdf.set_draw_color(*_LIGHT_GRAY)
-    pdf.line(pdf.l_margin, y, pdf.l_margin + pw, y)
-    pdf.ln(6)
 
 
