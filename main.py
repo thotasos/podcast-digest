@@ -24,7 +24,7 @@ def load_config(config_path: str) -> dict:
         "whisper_model": "small",
         "whisper_device": "cpu",
         "whisper_language": "en",
-        "model": "gpt-oss:20b",
+        "model": "llama3",
         "ollama_host": "http://localhost:11434",
         "chunk_minutes": 5,
         "max_takeaways_per_chunk": 3,

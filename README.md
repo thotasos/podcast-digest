@@ -18,7 +18,7 @@ You also need [Ollama](https://ollama.ai) running locally:
 
 ```bash
 ollama serve
-ollama pull gpt-oss:20b  # or your preferred model
+ollama pull llama3  # or your preferred model (e.g., mistral, codellama)
 ```
 
 ## Usage

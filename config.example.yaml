@@ -4,7 +4,7 @@ whisper_device: "cpu"           # cpu or cuda
 whisper_language: "en"          # null for auto-detect
 
 # Ollama
-model: "gpt-oss:20b"
+model: "llama3"
 ollama_host: "http://localhost:11434"
 
 # Chunking
